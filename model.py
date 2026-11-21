@@ -71,8 +71,12 @@ def accuracy(logits_or_probs, labels):
 def he_std(fan_in):
     return np.sqrt(2/fan_in)
 
-# Step 11 - he_init (not yet solved)
-# TODO: implement
+# Step 11 - he_init
+def he_init(shape, fan_in, seed):
+    np.random.seed(seed)
+    normal_matrix = np.random.randn(*shape)
+
+    return normal_matrix * he_std(fan_in)
 
 # Step 12 - init_zero_bias (not yet solved)
 # TODO: implement
