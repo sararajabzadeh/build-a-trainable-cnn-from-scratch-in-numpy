@@ -110,8 +110,28 @@ def im2col(images, kernel_h, kernel_w, stride, padding):
         
     return matrix
 
-# Step 16 - col2im (not yet solved)
-# TODO: implement
+# Step 16 - col2im
+def col2im(cols, input_shape, kernel_h, kernel_w, stride, padding):
+    N = input_shape[0]
+    C = input_shape[1]
+    H_padded = input_shape[2] + 2 * padding
+    W_padded = input_shape[3] + 2 * padding
+
+    out_w = output_spatial_size(input_shape[3], kernel_w, stride, padding)
+    out_h = output_spatial_size(input_shape[2], kernel_h, stride, padding)
+
+    matrix = np.zeros((N, C, H_padded, W_padded))
+
+    for n in range(N):
+        for i in range(out_h):
+            for j in range(out_w):
+                patch = cols[(n * out_h * out_w) + (i * out_w) + j].reshape((C, kernel_h, kernel_w))
+
+                matrix[n, :, i * stride : (i * stride) + kernel_h, j * stride : (j * stride) + kernel_w] += patch
+
+    if padding > 0:
+        return matrix[:, :, padding : -padding, padding : -padding]
+    return matrix
 
 # Step 17 - conv2d_forward (not yet solved)
 # TODO: implement
