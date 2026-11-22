@@ -99,7 +99,7 @@ def im2col(images, kernel_h, kernel_w, stride, padding):
     output_w = output_spatial_size(images.shape[3], kernel_w, stride, padding)
 
     num_images = padded_images.shape[0]
-    matrix = np.zeros((images.shape[0] * output_h * output_w, images.shape[1] * kernel_h * kernel_w), dtype=np.int32)
+    matrix = np.zeros((images.shape[0] * output_h * output_w, images.shape[1] * kernel_h * kernel_w), dtype=images.dtype)
 
 
     for n in range(num_images):
@@ -133,8 +133,36 @@ def col2im(cols, input_shape, kernel_h, kernel_w, stride, padding):
         return matrix[:, :, padding : -padding, padding : -padding]
     return matrix
 
-# Step 17 - conv2d_forward (not yet solved)
-# TODO: implement
+# Step 17 - conv2d_forward
+def conv2d_forward(x, weights, bias, stride, padding):
+    x_shape = x.shape
+    kernel_h = weights.shape[2]
+    kernel_w = weights.shape[3]
+
+    out_size_h = output_spatial_size(x.shape[2], kernel_h, stride, padding)
+    out_size_w = output_spatial_size(x.shape[3], kernel_w, stride, padding)
+
+    cols = im2col(x, kernel_h, kernel_w, stride, padding)
+    reshaped_kernel = weights.reshape(weights.shape[0], weights.shape[1]*weights.shape[2]*weights.shape[3])
+
+    out = (cols @ reshaped_kernel.T + bias).reshape(x.shape[0], weights.shape[0], out_size_h, out_size_w)
+    
+    print("cols", cols.shape)
+    print("reshaped", reshaped_kernel.shape)
+    print("multi", (cols @ reshaped_kernel.T).shape)
+    print("bias", bias.shape)
+
+    cache = {
+        "x_shape": x_shape,
+        "weights": weights,
+        "cols": cols,
+        "stride": stride,
+        "padding": padding,
+        "kernel_h": kernel_h,
+        "kernel_w": kernel_w
+    }
+
+    return out, cache
 
 # Step 18 - conv2d_grad_input (not yet solved)
 # TODO: implement
