@@ -145,12 +145,7 @@ def conv2d_forward(x, weights, bias, stride, padding):
     cols = im2col(x, kernel_h, kernel_w, stride, padding)
     reshaped_kernel = weights.reshape(weights.shape[0], weights.shape[1]*weights.shape[2]*weights.shape[3])
 
-    out = (cols @ reshaped_kernel.T + bias).reshape(x.shape[0], weights.shape[0], out_size_h, out_size_w)
-    
-    print("cols", cols.shape)
-    print("reshaped", reshaped_kernel.shape)
-    print("multi", (cols @ reshaped_kernel.T).shape)
-    print("bias", bias.shape)
+    out = (cols @ reshaped_kernel.T + bias).reshape(x.shape[0], out_size_h, out_size_w, weights.shape[0]).transpose(0, 3, 1, 2)
 
     cache = {
         "x_shape": x_shape,
